@@ -19,15 +19,15 @@ typedef struct s_philos_data
 	int time_to_die;
 	int time_to_eat;
 	int time_to_sleep;
-	int number_of_times_each_philosopher_must_eat;
-	pthread_mutex_t *mutexes;
+	int number_of_times_each_philosopher_must_eat;	
+	int	is_a_philo_dead;
 	t_one_philo_data	*philos;
 } t_philos_data;
 
 typedef struct s_philos_data_w
 {
 	int which_philo;
-	t_philos_data data;	
+	t_philos_data *data;	
 } t_philos_data_w;
 
 

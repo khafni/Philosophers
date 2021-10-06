@@ -27,6 +27,7 @@ t_philos_data *get_philos_data(void)
 	return (phs_data);
 }
 
+
 t_philos_data	*init_philos_data(int argc, char **argv)
 {
 	t_philos_data *philos_data;
@@ -34,13 +35,13 @@ t_philos_data	*init_philos_data(int argc, char **argv)
 	
 	if (argc < 5 || argc > 6)
 		return (NULL);
-	 //philos_data = get_philos_data();
 	philos_data = malloc(sizeof(t_philos_data));
 	philos_data->philos = malloc(sizeof(t_one_philo_data) * philos_data->number_of_philosopher);
 	philos_data->number_of_philosopher = ft_atoi(argv[1]);
 	philos_data->time_to_die = ft_atoi(argv[2]);
 	philos_data->time_to_eat = ft_atoi(argv[3]);
 	philos_data->time_to_sleep = ft_atoi(argv[4]);
+	philos_data->is_a_philo_dead = 0;
  	if (argc == 6)
 		philos_data->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);	
 	else
@@ -56,9 +57,14 @@ t_philos_data	*init_philos_data(int argc, char **argv)
 	return (philos_data);
 }
 
-void	pthread_create_helper(pthread_t *thread_addr, thread_routine)
+/* void	pthread_create_helper(pthread_t *thread_addr,
+	void *(*routine)(void *data),
+	void *arg, int which_philo)
+{
+	pthreasd
+} */
 
-void waiter(void *data_)
+void launch_threads(void *data_)
 {
 	t_philos_data	*data;
 	int				i;
@@ -69,15 +75,43 @@ void waiter(void *data_)
 	{
 		pthread_create(&(data->philos[i].thread), NULL, philo_routine, data_);
 		i++;
-	}	
+	}
+}
+
+void waiter(void *data_)
+{
+	t_philos_data	*data;	
+	int				i;
+	t_philos_data_w	d_w_indx;
+
+	data = data_;
+	d_w_indx.data = data;	
+	i = 0;
+	while (i < data->number_of_philosopher)
+	{
+		d_w_indx.which_philo = i;
+		pthread_create(&(data->philos[i].thread), NULL, philo_routine, &d_w_indx);
+		i++;
+	}
+	while (1)
+	{
+
+	}
 }
 
 void philo_routine(void *data_)
 {
-	t_philos_data *data;
+	t_philos_data_w *data_w;
+	int				index;
 
-	data = data_;
-	pthread_mutex_lock(data->mutexes);
-	
-	pthread_mutex_unlock(data);
+	data_w = data_;
+	index = data_w->which_philo;
+	while (1)
+	{
+		pthread_mutex_lock(&(data_w->data->philos[index % 5].mutex));
+		pthread_mutex_lock(&(data_w->data->philos[(index + 1) % 5].mutex));
+
+		pthread_mutex_unlock(&(data_w->data->philos[index].mutex));
+		pthread_mutex_unlock(&(data_w->data->philos[(index + 1) % 5].mutex));
+	}
 }
