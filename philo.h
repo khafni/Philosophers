@@ -5,6 +5,7 @@
 # include "tools.h"
 # include <pthread.h>
 # include <sys/time.h>
+# define WAITER_TERMINATE -666
 
 typedef struct s_one_philo_data
 {
@@ -33,6 +34,6 @@ typedef struct s_philos_data_w
 
 t_philos_data	*get_philos_data(void);
 t_philos_data	*init_philos_data(int argc, char **argv);
-void			waiter(void *data_);
-void			philo_routine(void *data_);
+int				waiter(void *data_);
+void			*philo_routine(void *data_);
 #endif

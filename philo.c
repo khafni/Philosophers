@@ -1,5 +1,7 @@
 #include "philo.h"
 
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
 long int		actual_time(void)
 {
 	long int			time;
@@ -9,24 +11,6 @@ long int		actual_time(void)
 	time = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
 	return (time);
 }
-
-
-t_philos_data *get_philos_data(void)
-{
-	static t_philos_data *phs_data = NULL;
-
-	if (phs_data == NULL)
-	{
-		phs_data = malloc(sizeof(struct s_philos_data));
-		phs_data->number_of_philosopher = 0;
-		phs_data->number_of_times_each_philosopher_must_eat = 0;
-		phs_data->time_to_die = 0;
-		phs_data->time_to_eat = 0;
-		phs_data->time_to_sleep = 0;
-	}
-	return (phs_data);
-}
-
 
 t_philos_data	*init_philos_data(int argc, char **argv)
 {
@@ -45,15 +29,14 @@ t_philos_data	*init_philos_data(int argc, char **argv)
  	if (argc == 6)
 		philos_data->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);	
 	else
-		philos_data->number_of_times_each_philosopher_must_eat = -1;
-	philos_data->mutexes = malloc(philos_data->number_of_philosopher * sizeof(pthread_mutex_t));
-	i = 0;
-	while (i < philos_data->number_of_philosopher)
-	{
-		philos_data->philos[i].last_time_ate = actual_time();
-		pthread_mutex_init(&(philos_data->philos[i].mutex), NULL);
-		i++;
-	}
+		philos_data->number_of_times_each_philosopher_must_eat = -1;	
+	// i = 0;
+	// while (i < philos_data->number_of_philosopher)
+	// {
+	// 	philos_data->philos[i].last_time_ate = actual_time();
+	// 	pthread_mutex_init(&(philos_data->philos[i].mutex), NULL);
+	// 	i++;
+	// }
 	return (philos_data);
 }
 
@@ -78,7 +61,7 @@ void launch_threads(void *data_)
 	}
 }
 
-void waiter(void *data_)
+int	waiter(void *data_)
 {
 	t_philos_data	*data;	
 	int				i;
@@ -87,31 +70,64 @@ void waiter(void *data_)
 	data = data_;
 	d_w_indx.data = data;	
 	i = 0;
-	while (i < data->number_of_philosopher)
-	{
-		d_w_indx.which_philo = i;
-		pthread_create(&(data->philos[i].thread), NULL, philo_routine, &d_w_indx);
-		i++;
-	}
-	while (1)
-	{
 
-	}
+	// while (i < data->number_of_philosopher)
+	// {
+	// 	d_w_indx.which_philo = i;
+	// 	pthread_create(&(data->philos[i].thread), NULL, philo_routine, &d_w_indx);
+	// 	i++;
+	// }
+	
+
+	// i = 0;
+	// while (i < data->number_of_philosopher)
+	// {
+	// 	d_w_indx.which_philo = i;
+	// 	pthread_join(data->philos[i].thread, NULL);	
+	// 	i++;
+	// }
+	// while (1)
+	// {
+	// 	if (data->is_a_philo_dead == 1)
+	// 	{
+	// 		break ;
+	// 	}
+	// }
+	free(data->philos);
+	free(data);
+	i = 0;
+	// while (i < data->number_of_philosopher)
+	// {
+	// 	pthread_mutex_destroy(&(data->philos[i].mutex));
+	// 	i++;
+	// }
+	return (WAITER_TERMINATE);	
 }
 
-void philo_routine(void *data_)
+void *philo_routine(void *data_)
 {
 	t_philos_data_w *data_w;
 	int				index;
 
+	//pthread_mutex_lock(&lock);
 	data_w = data_;
 	index = data_w->which_philo;
 	while (1)
 	{
+		//if (data_w->data->is_a_philo_dead)
+			//return (NULL);
+		if (actual_time() - data_w->data->philos[index].last_time_ate >= data_w->data->time_to_die)
+		{	
+			data_w->data->is_a_philo_dead = 1;	
+			//return (NULL);
+		} 
 		pthread_mutex_lock(&(data_w->data->philos[index % 5].mutex));
 		pthread_mutex_lock(&(data_w->data->philos[(index + 1) % 5].mutex));
-
+		printf("sleeping    index: %d\n", index);
+		usleep(data_w->data->time_to_eat);
 		pthread_mutex_unlock(&(data_w->data->philos[index].mutex));
 		pthread_mutex_unlock(&(data_w->data->philos[(index + 1) % 5].mutex));
 	}
+	//pthread_mutex_unlock(&lock);
+	return (NULL);
 }
