@@ -12,8 +12,6 @@ void* routine(void* arg) {
     free(arg);
 }
 
-
-
 int main(int argc, char* argv[]) {
     pthread_t th[10];
     int i;

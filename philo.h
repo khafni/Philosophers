@@ -10,16 +10,16 @@
 typedef struct s_one_philo_data
 {
 	pthread_mutex_t	mutex;
-	long int		last_time_ate;
+	unsigned long int		last_time_ate;
 	pthread_t		thread;
 } t_one_philo_data;
 
 typedef struct s_philos_data
 {
 	int number_of_philosopher;
-	int time_to_die;
-	int time_to_eat;
-	int time_to_sleep;
+	unsigned long time_to_die;
+	unsigned long time_to_eat;
+	unsigned long time_to_sleep;
 	int number_of_times_each_philosopher_must_eat;	
 	int	is_a_philo_dead;
 	t_one_philo_data	*philos;
@@ -28,6 +28,7 @@ typedef struct s_philos_data
 typedef struct s_philos_data_w
 {
 	int which_philo;
+	int is_a_philo_dead;
 	t_philos_data *data;	
 } t_philos_data_w;
 
