@@ -1,8 +1,5 @@
 #include "philo.h"
 
-
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
 unsigned long int		actual_time(void)
 {
 	unsigned long int			time;
@@ -13,6 +10,20 @@ unsigned long int		actual_time(void)
 	time = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
 	return (time);
 }
+
+void	ft_usleep(long int time_in_ms)
+{
+	long int	start_time;
+
+	start_time = 0;
+	start_time = actual_time();
+	while ((actual_time() - start_time) < time_in_ms)
+		usleep(time_in_ms / 10);
+}
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+
 
 t_philos_data	*init_philos_data(int argc, char **argv)
 {
@@ -181,9 +192,9 @@ void *philo_routine(void *data_)
 		print_status(data_w->which_philo, EATING_STATE, actual_time());
 		// 	printf("philo : %d died\n", index);
 
-		usleep(data_w->data->time_to_eat);
+		ft_usleep(data_w->data->time_to_eat);
 		print_status(data_w->which_philo, SLEEPING_STATE, actual_time());
-		usleep(data_w->data->time_to_sleep);
+		ft_usleep(data_w->data->time_to_sleep);
 		//printf("%ld %d %s\n", actual_time(), index, "has taken a fork");
 		pthread_mutex_unlock(&(data_w->data->philos[(index + (index % 2))  % data_w->data->number_of_philosopher].mutex));
 		pthread_mutex_unlock(&(data_w->data->philos[(index + ((index + 1) % 2)) % data_w->data->number_of_philosopher].mutex));
