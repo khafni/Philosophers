@@ -11,10 +11,9 @@ int main(int argc, char **argv)
 		printf("error\n");
 		return (1);
 	}
-	if (waiter(data) == WAITER_TERMINATE)
+	while (waiter(data) != WAITER_TERMINATE)
 	{
-		printf("DEATH\n");
-		return (666);
+		continue ;
 	}	
 	// free(data->philos);
 	// free(data);
