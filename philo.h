@@ -25,6 +25,7 @@ typedef struct s_one_philo_data
 typedef struct s_philos_data
 {
 	int number_of_philosopher;
+	unsigned long start_time;
 	unsigned long time_to_die;
 	unsigned long time_to_eat;
 	unsigned long time_to_sleep;
