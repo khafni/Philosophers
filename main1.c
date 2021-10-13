@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
         }
     }
     //pthread_mutex_lock(&lock1);
-    printf("dude");
+    // printf("dude");
     /* for (i = 0; i < 10; i++)
 	{
         if (pthread_join(th[i], NULL) != 0) {

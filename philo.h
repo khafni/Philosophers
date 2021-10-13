@@ -20,6 +20,7 @@ typedef struct s_one_philo_data
 	unsigned long int		last_time_ate;
 	pthread_t		thread;
 	pthread_t		suprv_thread;
+	int				number_of_times_ate;
 } t_one_philo_data;
 
 typedef struct s_philos_data
@@ -34,6 +35,7 @@ typedef struct s_philos_data
 	t_one_philo_data	*philos;	
 	int					*philos_states;
 	pthread_mutex_t		philos_states_lock;
+	pthread_mutex_t 	writelock;
 } t_philos_data;
 
 typedef struct s_philos_data_w
@@ -45,7 +47,7 @@ typedef struct s_philos_data_w
 
 
 
-void print_status(int n, int which_state, unsigned long int time);
+void print_status(int n, int which_state, unsigned long int time, t_philos_data_w *data_w);
 
 t_philos_data	*get_philos_data(void);
 t_philos_data	*init_philos_data(int argc, char **argv);
