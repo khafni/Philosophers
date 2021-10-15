@@ -90,12 +90,12 @@ int	waiter(t_one_philo_data *philos)
 		i++;
 	}
 	supervisor(philos);
-	i = 0;
-	while (i < data->number_of_philosopher)
-	{	
-		pthread_join(philos[i].thread, NULL);		
-		i++;
-	}
+	// i = 0;
+	// while (i < data->number_of_philosopher)
+	// {	
+	// 	pthread_join(philos[i].thread, NULL);		
+	// 	i++;
+	// }
 	return (WAITER_TERMINATE);	
 }
 
@@ -119,8 +119,9 @@ void print_status(int which_state, t_one_philo_data *philo)
 	else if (which_state == DEATH_STATE)
 		printf("%lu %d died\n", time, philo->id);
 	else if (which_state == SLEEPING_STATE)
-		printf("%lu %d is sleeping\n", time, philo->id);		
-	pthread_mutex_unlock(&data->death_lock);
+		printf("%lu %d is sleeping\n", time, philo->id);
+	if (which_state != DEATH_STATE)	
+		pthread_mutex_unlock(&data->death_lock);
 	// ft_usleep(5);
 }
 
