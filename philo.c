@@ -64,6 +64,7 @@ t_one_philo_data	*init_philos_data(int argc, char **argv)
 	{	
 		pthread_mutex_init(&(philos[i].mutex), NULL);
 		pthread_mutex_init(&(philos[i].eating_lock), NULL);
+		pthread_mutex_init(&(philos[i].eating_count_lock), NULL);
 		philos[i].last_time_ate = actual_time() - philos_data->start_time;
 		philos[i].number_of_times_ate = 0;
 		philos[i].data = philos_data;
@@ -102,33 +103,39 @@ int	waiter(t_one_philo_data *philos)
 void print_status(int which_state, t_one_philo_data *philo)
 {
 	//index++;
+	int				index;
 	unsigned long	time;
 	t_philos_data	*data;
 
 	data = philo->data;
 	time = actual_time() - data->start_time;
+	index = philo->id;
+	index++;
 	// time =  data->start_time;
 	pthread_mutex_lock(&data->death_lock);
 	time = actual_time() - data->start_time;
 	if (which_state == EATING_STATE)
-		printf("%lu %d is eating\n", time, philo->id);	
+		printf("%lu %d is eating\n", time, index);	
 	else if (which_state == THINKING_STATE)	
-		printf("%lu %d is thinking\n", time, philo->id);
+		printf("%lu %d is thinking\n", time, index);
 	else if (which_state == FORK_GET_STATE)
-		printf("%lu %d has taken a fork\n", time, philo->id);
+		printf("%lu %d has taken a fork\n", time, index);
 	else if (which_state == DEATH_STATE)
-		printf("%lu %d died\n", time, philo->id);
+		printf("%lu %d died\n", time, index);
 	else if (which_state == SLEEPING_STATE)
-		printf("%lu %d is sleeping\n", time, philo->id);
-	if (which_state != DEATH_STATE)	
+		printf("%lu %d is sleeping\n", time, index);
+	if (which_state != DEATH_STATE)
 		pthread_mutex_unlock(&data->death_lock);
 	// ft_usleep(5);
 }
+
+
 
 void			supervisor(t_one_philo_data *philos)
 {	
 	unsigned long int timenow;
 	unsigned long		last_meal;
+
 	int					i;
 	t_one_philo_data	philo;
 	t_philos_data	*data;
@@ -146,8 +153,9 @@ void			supervisor(t_one_philo_data *philos)
 			pthread_mutex_unlock(&data->last_meal_lock);
 			timenow = actual_time() - data->start_time;
 			
-			if (timenow - philo.last_time_ate >= data->time_to_die)
-			{pthread_mutex_lock(&philo.eating_lock); //eating lock
+			if (timenow - philo.last_time_ate > data->time_to_die)
+			{
+				pthread_mutex_lock(&philo.eating_lock); //eating lock
 				pthread_mutex_lock(&data->death_lock);
 				data->is_a_philo_dead = 0;
 				pthread_mutex_unlock(&data->death_lock);	
@@ -172,6 +180,9 @@ void			philo_subroutine(t_one_philo_data *philo)
 	pthread_mutex_lock(&data->last_meal_lock);
 	philo->last_time_ate = actual_time() - data->start_time;
 	pthread_mutex_unlock(&data->last_meal_lock);
+	pthread_mutex_lock(&philo->eating_count_lock);
+	philo->number_of_times_ate++;
+	pthread_mutex_unlock(&philo->eating_count_lock);
 	pthread_mutex_lock(&philo->eating_lock);
 	print_status(EATING_STATE, philo);
 	ft_usleep(data->time_to_eat);
@@ -193,7 +204,7 @@ void *philo_routine(void *philo_)
 	if (philo->id % 2 == 0)
 		usleep(100);	
 	pthread_mutex_lock(&data->death_lock);
-	while (data->is_a_philo_dead)
+	while (data->is_a_philo_dead && philo->number_of_times_ate < data->number_of_times_each_philosopher_must_eat)
 	{
 		pthread_mutex_unlock(&data->death_lock);	
 		philo_subroutine(philo);

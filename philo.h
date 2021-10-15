@@ -23,6 +23,7 @@ typedef struct s_one_philo_data
 	int				number_of_times_ate;
 	int				id;
 	pthread_mutex_t	eating_lock;
+	pthread_mutex_t eating_count_lock;
 	void			*data;
 } t_one_philo_data;
 
@@ -33,11 +34,11 @@ typedef struct s_philos_data
 	unsigned long time_to_die;
 	unsigned long time_to_eat;
 	unsigned long time_to_sleep;
-	int number_of_times_each_philosopher_must_eat;	
+	unsigned long number_of_times_each_philosopher_must_eat;	
 	int	is_a_philo_dead;		
 	pthread_mutex_t 	writelock;
 	pthread_mutex_t		death_lock;
-	pthread_mutex_t		last_meal_lock;
+	pthread_mutex_t		last_meal_lock;	
 	t_one_philo_data	*philos;
 } t_philos_data;
 
