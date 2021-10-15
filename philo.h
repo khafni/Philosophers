@@ -21,6 +21,8 @@ typedef struct s_one_philo_data
 	pthread_t		thread;
 	pthread_t		suprv_thread;
 	int				number_of_times_ate;
+	int				id;
+	t_philos_data	*data;
 } t_one_philo_data;
 
 typedef struct s_philos_data
@@ -31,11 +33,11 @@ typedef struct s_philos_data
 	unsigned long time_to_eat;
 	unsigned long time_to_sleep;
 	int number_of_times_each_philosopher_must_eat;	
-	int	is_a_philo_dead;
-	t_one_philo_data	*philos;	
-	int					*philos_states;
-	pthread_mutex_t		philos_states_lock;
+	int	is_a_philo_dead;		
 	pthread_mutex_t 	writelock;
+	pthread_mutex_t		death_lock;
+	pthread_mutex_t		last_meal_lock;
+	t_one_philo_data	*philos;
 } t_philos_data;
 
 typedef struct s_philos_data_w
@@ -47,12 +49,13 @@ typedef struct s_philos_data_w
 
 
 
-void print_status(int n, int which_state, unsigned long int time, t_philos_data_w *data_w);
+void print_status(int which_state, t_philos_data_w *data_w);
 
 t_philos_data	*get_philos_data(void);
 t_philos_data	*init_philos_data(int argc, char **argv);
 int				waiter(void *data_);
 
 void			*philo_routine(void *data_);
+void			philo_subroutine(void *data_);
 void			*superv_routine(void *data_);
 #endif
