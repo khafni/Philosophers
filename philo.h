@@ -22,7 +22,7 @@ typedef struct s_one_philo_data
 	pthread_t		suprv_thread;
 	int				number_of_times_ate;
 	int				id;
-	t_philos_data	*data;
+	void			*data;
 } t_one_philo_data;
 
 typedef struct s_philos_data
@@ -49,13 +49,14 @@ typedef struct s_philos_data_w
 
 
 
-void print_status(int which_state, t_philos_data_w *data_w);
 
-t_philos_data	*get_philos_data(void);
-t_philos_data	*init_philos_data(int argc, char **argv);
-int				waiter(void *data_);
+void				print_status(int which_state, t_one_philo_data *philo);
+t_philos_data		*get_philos_data(void);
+t_one_philo_data	*init_philos_data(int argc, char **argv);
+int				waiter(t_one_philo_data *philos);
 
-void			*philo_routine(void *data_);
-void			philo_subroutine(void *data_);
-void			*superv_routine(void *data_);
+
+void			*philo_routine(void *philo_);
+void			philo_subroutine(t_one_philo_data *philo);
+void			supervisor(t_one_philo_data *philo);
 #endif

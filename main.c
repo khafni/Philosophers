@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv)
 {
-	t_philos_data *data;
+	t_one_philo_data *data;
 
 	data = init_philos_data(argc, argv);
 	if (!data)
