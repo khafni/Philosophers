@@ -55,7 +55,6 @@ t_one_philo_data	*init_philos_data(int argc, char **argv)
 	philos_data->start_time = actual_time();
 	philos_data->is_a_philo_dead = 1;
 	philos = malloc(sizeof(struct s_one_philo_data) * philos_data->number_of_philosopher);	
-	// philos_data->philos_states = malloc(sizeof(int) * (philos_data->number_of_philosopher + 1));	
  	if (argc == 6)
 		philos_data->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);	
 	else
@@ -63,7 +62,8 @@ t_one_philo_data	*init_philos_data(int argc, char **argv)
 	i = 0;
 	while (i < philos_data->number_of_philosopher)
 	{	
-		pthread_mutex_init(&(philos[i].mutex), NULL);	
+		pthread_mutex_init(&(philos[i].mutex), NULL);
+		pthread_mutex_init(&(philos[i].eating_lock), NULL);
 		philos[i].last_time_ate = actual_time() - philos_data->start_time;
 		philos[i].number_of_times_ate = 0;
 		philos[i].data = philos_data;
@@ -144,15 +144,17 @@ void			supervisor(t_one_philo_data *philos)
 			pthread_mutex_lock(&data->last_meal_lock);
 			last_meal = philo.last_time_ate;
 			pthread_mutex_unlock(&data->last_meal_lock);
-			timenow = actual_time() - data->start_time;	
+			timenow = actual_time() - data->start_time;
+			
 			if (timenow - philo.last_time_ate >= data->time_to_die)
-			{
+			{pthread_mutex_lock(&philo.eating_lock); //eating lock
 				pthread_mutex_lock(&data->death_lock);
 				data->is_a_philo_dead = 0;
 				pthread_mutex_unlock(&data->death_lock);	
 				print_status(DEATH_STATE, &philo);
 				return ;
 			}
+			pthread_mutex_unlock(&philo.eating_lock); //eating unlock
 			i++;
 		}
 	}
@@ -170,8 +172,10 @@ void			philo_subroutine(t_one_philo_data *philo)
 	pthread_mutex_lock(&data->last_meal_lock);
 	philo->last_time_ate = actual_time() - data->start_time;
 	pthread_mutex_unlock(&data->last_meal_lock);
+	pthread_mutex_lock(&philo->eating_lock);
 	print_status(EATING_STATE, philo);
 	ft_usleep(data->time_to_eat);
+	pthread_mutex_unlock(&philo->eating_lock);
 	print_status(SLEEPING_STATE, philo);
 	pthread_mutex_unlock(&philo->mutex);
 	pthread_mutex_unlock(&data->philos[(philo->id + 1) % data->number_of_philosopher].mutex);

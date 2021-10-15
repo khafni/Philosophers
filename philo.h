@@ -22,6 +22,7 @@ typedef struct s_one_philo_data
 	pthread_t		suprv_thread;
 	int				number_of_times_ate;
 	int				id;
+	pthread_mutex_t	eating_lock;
 	void			*data;
 } t_one_philo_data;
 
