@@ -6,7 +6,7 @@
 /*   By: khafni <khafni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 15:39:13 by khafni            #+#    #+#             */
-/*   Updated: 2021/10/16 17:38:52 by khafni           ###   ########.fr       */
+/*   Updated: 2021/10/16 18:46:07 by khafni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,35 @@ void	philo_subroutine(t_one_philo_data *philo)
 	print_status(THINKING_STATE, philo);
 }
 
+void	philo_routine_helper(t_one_philo_data *philo, t_philos_data *data)
+{
+	pthread_mutex_unlock(&data->death_lock);
+	philo_subroutine(philo);
+	pthread_mutex_lock(&data->death_lock);
+}
+
 void	*philo_routine(void *philo_)
 {
 	t_one_philo_data	*philo;
 	t_philos_data		*data;
+	long				ntepe;
 
 	philo = philo_;
 	data = philo->data;
+	ntepe = data->num_times_each_philo_eat;
 	if (philo->id % 2 == 0)
 		usleep(100);
 	pthread_mutex_lock(&data->death_lock);
-	while (data->is_a_philo_dead && philo->number_of_times_ate
-		< (int)data->num_times_each_philo_eat)
+	if (data->num_times_each_philo_eat != -1)
 	{
-		pthread_mutex_unlock(&data->death_lock);
-		philo_subroutine(philo);
-		pthread_mutex_lock(&data->death_lock);
+		while (data->is_a_philo_dead
+			&& philo->number_of_times_ate < (int)ntepe)
+			philo_routine_helper(philo, data);
+	}
+	else
+	{		
+		while (data->is_a_philo_dead)
+			philo_routine_helper(philo, data);
 	}
 	pthread_mutex_unlock(&data->death_lock);
 	return (NULL);
@@ -77,7 +90,7 @@ void	supervisor(t_one_philo_data *philos)
 	sup.philos = philos;
 	sup.data = philos[0].data;
 	while (1)
-	{	
+	{
 		sup.i = 0;
 		while (sup.i < sup.data->number_of_philos)
 		{	

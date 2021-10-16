@@ -6,7 +6,7 @@
 /*   By: khafni <khafni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 15:32:23 by khafni            #+#    #+#             */
-/*   Updated: 2021/10/16 17:44:33 by khafni           ###   ########.fr       */
+/*   Updated: 2021/10/16 19:18:26 by khafni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,29 @@ int	checkIfNonNumeric(char *arg)
 	return (1);
 }
 
+int	check_if_arg_is_big(int argc, char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (i < argc)
+	{
+		j = 0;
+		while (argv[i][j])
+			j++;
+		if (j > 10)
+		{
+			printf("arg with an illogically huge number ");
+			printf("you don't want your philosopher to sleep for eternity ");
+			printf("or something :/\n");
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
 int	parse_args(int argc, char **argv)
 {
 	int	i;
@@ -57,5 +80,7 @@ int	parse_args(int argc, char **argv)
 		}
 		i++;
 	}
+	if (check_if_arg_is_big(argc, argv))
+		return (0);
 	return (1);
 }

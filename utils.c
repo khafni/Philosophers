@@ -6,7 +6,7 @@
 /*   By: khafni <khafni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 15:37:19 by khafni            #+#    #+#             */
-/*   Updated: 2021/10/16 17:31:58 by khafni           ###   ########.fr       */
+/*   Updated: 2021/10/16 19:00:44 by khafni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ unsigned long int	actual_time(void)
 	return (time);
 }
 
-void	ft_usleep(long int time_in_ms)
+void	ft_usleep(unsigned long time_in_ms)
 {
-	long int	start_time;
+	unsigned long	start_time;
 
 	start_time = 0;
 	start_time = actual_time();
-	while ((long)(actual_time() - start_time) < time_in_ms)
+	while ((actual_time() - start_time) < time_in_ms)
 		usleep((time_in_ms) / 10);
 }

@@ -6,7 +6,7 @@
 /*   By: khafni <khafni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 17:16:07 by khafni            #+#    #+#             */
-/*   Updated: 2021/10/16 17:19:22 by khafni           ###   ########.fr       */
+/*   Updated: 2021/10/16 18:58:26 by khafni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct s_philos_data
 	unsigned long		time_to_die;
 	unsigned long		time_to_eat;
 	unsigned long		time_to_sleep;
-	unsigned long		num_times_each_philo_eat;	
+	long				num_times_each_philo_eat;	
 	int					is_a_philo_dead;		
 	pthread_mutex_t		writelock;
 	pthread_mutex_t		death_lock;
@@ -70,7 +70,7 @@ typedef struct s_supervisor
 	t_philos_data		*data;
 }	t_supervisor;
 
-void					ft_usleep(long int time_in_ms);
+void					ft_usleep(unsigned long time_in_ms);
 int						parse_args(int argc, char **argv);
 int						checkIfNonNumeric(char *argument);
 int						checkIfNegative(char *argument);

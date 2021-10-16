@@ -6,10 +6,10 @@ CFLAGS =  -Wall -Wextra -Werror
 all: $(NAME)
 
 $(NAME):
-	$(CC) $(CFLAGS) $(SRCS) -o $(NAME)
+	gcc $(CFLAGS) $(SRCS) -o $(NAME)
 
 clean:
-	rm philo
+	@rm -Rf philo
 
 fclean: clean
 	@echo everything been cleaned
